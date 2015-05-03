@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <script type="text/javascript" src="xslt.js"></script>
+        <script type="text/javascript" >
+            function go(){
+                transform = getTransformator();
+                data = transform('test.xml','test.xsl');
+                document.getElementById('a').appendChild(data);
+            }
+            window.onload = go;
+        </script>
+    </head>
+    <body onready="go">
+        <div id="a"></div>
+    </body>
+</html>

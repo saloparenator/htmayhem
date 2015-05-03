@@ -1,0 +1,25 @@
+have a grid
+    with obstacle
+
+each deck is made of card specific to the caracter,
+  archer deck
+  knight deck
+  space marine deck...
+  
+  and have a starter card
+
+each round, player put a card on the grid, each card tell where the next card can be.
+
+
+card:
+    -relative tile attack
+    -relative tile defense
+    -relative tile movement
+    -immediate effect
+    
+it is cards against cards
+every turn you place a card in a tile that last placed card allow out.
+every card change battle map behavior, bonus on attack,def, movement
+every card allow you to move to certain tile
+you only consider last card, as they are effective for only one turn
+your card should attack last oponent card

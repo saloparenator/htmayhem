@@ -1,0 +1,179 @@
+<html>
+<body>
+<div id='game' />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+function equals(a,b){return JSON.stringify(a)==JSON.stringify(b);}
+function different(a,b){return !equals(a,b);}
+function inarray(val, arr){for (var i in arr){if (equals(val,arr[i])){return true;}}return false;}
+function position(x,y){return {'x':Number(x),'y':Number(y)}}
+function choose(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function neighbor(pos,game){
+	var x = Number(pos.x);
+	var y = Number(pos.y);
+	var h = game.field.length;
+	var w = game.field[0].length;
+	var nei = [];
+	if(x>0) nei.push(position(x-1,y));
+	if(y>0) nei.push(position(x,y-1));
+	if(x<w-1) nei.push(position(x+1,y));
+	if(y<h-1) nei.push(position(x,y+1));
+	return nei;
+}
+
+function adjacent(pos,game,found){
+	found.push(pos);
+	var nei = neighbor(pos,game);
+	var center = game.field[pos.y][pos.x];
+	for(var i in nei){
+		var nupos = nei[i];
+		var otherCenter = game.field[nupos.y][nupos.x];
+		if (equals(center,otherCenter) && !inarray(nupos,found)){
+			found = adjacent(nupos,game,found);
+		}
+	}
+	return found;
+}
+
+function evolve(game,current){
+	if (current in game.evolution)
+		return game.evolution[current];
+	return game.empty;
+}
+
+function killall(found, game){
+	for (var i in found){
+		var pos = found[i];
+		game.field[pos.y][pos.x] = game.empty;
+	}
+	return game;
+}
+
+function findtiles(game,tile){
+	var found = [];
+	for (var y in game.field){
+		for (var x in game.field[y]){
+			if (equals(game.field[y][x],tile)){
+				found.push(position(x,y));
+			}
+		}
+	}
+	return found;
+}
+
+function movebear(game){
+	var bears = findtiles(game,game.bear);
+	for (var i in bears){
+		var bearpos = bears[i];
+		game.field[bearpos.y][bearpos.x]=game.empty;
+		var nei = neighbor(bearpos,game);
+		var neiempty = [];
+		for (var j in nei){
+			var neipos = nei[j]
+			var cell = game.field[neipos.y][neipos.x];
+			if (equals(cell,game.empty)){
+				neiempty.push(neipos);
+			}
+		}
+		if (neiempty.length>0){
+			var nupos = choose(neiempty);
+			game.field[nupos.y][nupos.x]=game.bear;
+		}	
+	}
+	return game;
+}
+
+function gameover(game){
+	return findtiles(game,game.empty).length==0;
+}
+
+function place(pos,tile,game){
+	game.field[pos.y][pos.x] = String(tile);
+	if (different(tile,'*')){
+		var found = adjacent(pos,game,[]);
+		if (found.length > 2){
+			game.score = game.score + game.value[tile]*Math.pow(2,found.length)/8;
+			game = killall(found, game);
+			game = place(pos,evolve(game,tile),game)
+		}
+	}
+	//piss off the player , move the bear
+	game = movebear(game);
+	//randomize next tile
+	game.next = choose(game.chance);
+	return game;
+}
+
+function makeplaceevent(pos,game){
+	return function(){game=place(pos,game.next,game);redraw(game);};
+}
+function redraw(game){
+	var $div = $('#'+game.id);
+	$div.empty();
+	if (gameover(game)){
+		$div.append($('<h1>').text('gameover'));
+	}
+	else{
+		var $table = $('<table>');
+		$table.css('border-collapse','collapse');
+		for (var y in game.field)
+		{
+			var row = game.field[y];
+			var $tr = $('<tr>');
+			for (var x in row)
+			{
+				var cell = row[x];
+				var $td = $('<td>');
+				$td.text(cell);
+				$td.css('width','16px').css('height','16px');
+				if (equals(cell,game.empty)){
+					$td.click(makeplaceevent(position(x,y),game));
+				}
+				$tr.append($td);
+			}
+			$table.append($tr);
+		}
+		var $next = $('<h2>').text(game.next);
+		var $score = $('<h3>').text(game.score);
+		$div.append($table).append($next).append($score);
+	}
+}
+
+$(document).ready(function (){
+	var game = {
+		next : '1',
+		field : [
+		['_','_','_','_','_','_'],
+		['a','_','1','_','_','_'],
+		['_','_','2','3','c','_'],
+		['_','_','1','_','_','_'],
+		['_','_','b','_','_','_'],
+		['_','_','_','_','_','_']
+		],
+		evolution : {
+		'1':'2', '2':'3', '3':'4', '4':'5',	'5':'6', '6':'7', '7':'8', '8':'9',	'9':'_',
+		'a':'b', 'b':'c', 'c':'d', 'd':'e', 'e':'f', 'f':'g', 'g':'h', 'h':'i', 'i':'j', 
+		'j':'k', 'k':'l', 'l':'m', 'm':'n', 'n':'o', 'o':'p', 'p':'q', 'q':'r', 'r':'s', 
+		's':'t', 't':'u', 'u':'v', 'v':'w', 'w':'x', 'x':'y', 'y':'z', 'z':'_'
+		},
+		value:{
+		'1':1, '2':1, '3':1, '4':2,	'5':2, '6':3, '7':4, '8':5,	'9':10,
+		'a':1, 'b':1, 'c':1, 'd':1, 'e':1, 'f':1, 'g':1, 'h':1, 'i':1, 
+		'j':2, 'k':2, 'l':2, 'm':2, 'n':2, 'o':3, 'p':3, 'q':3, 'r':3, 
+		's':4, 't':4, 'u':5, 'v':5, 'w':6, 'x':7, 'y':8, 'z':10
+		},
+		chance:[
+			1,1,1,1,2,2,3,
+			'a','a','a','a','b','b','c',
+			'*','*','*','*'],
+		bear:'*',
+		empty:'_',
+		score:0,
+		id:'game'
+	};
+	redraw(game);
+	
+});
+</script>
+</body>
+</html>

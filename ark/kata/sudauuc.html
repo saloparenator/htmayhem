@@ -1,0 +1,152 @@
+<html>
+<body>
+<div id='game' />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+function equals(a,b){return JSON.stringify(a)==JSON.stringify(b);}
+function different(a,b){return !equals(a,b);}
+function not(expr){return !expr;}
+function inarray(val, arr){for (var i in arr){if (equals(val,arr[i])){return true;}}return false;}
+function position(x,y){return {'x':Number(x),'y':Number(y)}}
+function choose(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+function generateRowPos(y){
+	var arrPos = [];
+	for (var x=0 ; x<9 ; x++){
+		arrPos.push(position(x,y));
+	}
+	return arrPos;
+}
+
+function generateColPos(x){
+	var arrPos = [];
+	for (var y=0 ; y<9 ; y++){
+		arrPos.push(position(x,y));
+	}
+	return arrPos;
+}
+
+function determinateBox(pos){
+	return (pos.x-(pos.x%3))/3 + pos.y - pos.y%3;
+}
+
+function generateBoxPos(n){
+	/*
+		0,0  3,0  6,0
+		0,3  3,3  6,3
+		0,6  3,6  6,6
+	*/
+	var startx = (n%3)*3;
+	var starty = (n-n%3);
+	var arrPos = [];
+	for (var x=startx ;x<startx+3; x++){
+		for (var y=starty ;y<starty+3 ;y++){
+			arrPos.push(position(x,y));
+		}
+	}
+	return arrPos;
+}
+
+function validateArrPos(arrPos, game){
+	var sofar = [];
+	for (var i in arrPos){
+		var pos = arrPos[i];
+		var cell = game.field[pos.y][pos.x];
+		if (not(inarray(cell,sofar)) && Number(cell)>=1 && Number(cell)<=9){
+			sofar.push(cell);
+		}
+		else if (different(cell,game.empty)){
+			return false;
+		}
+	}
+	return true;
+}
+function makechangeevent(x,y,game){
+	return function(){
+		var nuval = $(this).val();
+		if(equals(nuval,'')){
+			game.field[y][x] = game.empty;
+		}
+		else if (isNaN(nuval) || nuval<1 || nuval>9){
+			$(this).val('');
+		}
+		else{
+			game.field[y][x] = nuval;
+		}
+		redraw(game);
+	};
+}
+function redraw(game){
+	if (game.field === undefined){
+		game.field = [];
+		for (var x=0;x<9;x++){
+			game.field.push([]);
+			for (var y=0;y<9;y++){
+				game.field[x].push(game.empty);
+			}
+		}
+		for (var x=0;x<9;x++){
+			for (var y=0;y<9;y++){
+				game.field[y][x]=game.start[y][x].toString();
+			}
+		}
+	}
+	var $div = $('#'+game.id);
+	$div.empty();
+		var $table = $('<table>');
+		$table.css('border-collapse','collapse;');
+		for (var y=0;y<9;y++)
+		{
+			var $tr = $('<tr>');
+			for (var x=0;x<9;x++)
+			{
+				var startcell = game.start[y][x].toString();
+				var $td = $('<td>');
+				if (equals(startcell,game.empty)){
+					var cell = game.field[y][x];
+					var $input = $('<input>');
+					$input.attr('size','1');
+					$td.append($input);
+					$input.bind('keyup',makechangeevent(x,y,game));
+					if(different(cell, game.empty)){
+						$input.val(cell);
+					}
+					if(not(validateArrPos(generateRowPos(y),game)) ||
+					   not(validateArrPos(generateColPos(x),game)) ||
+					   not(validateArrPos(generateBoxPos(determinateBox(position(x,y))),game))){
+						$input.css('background-color','red');
+						$input.addClass('error');
+					}
+				}
+				else{
+					$td.text(startcell);
+				}
+				$tr.append($td);
+			}
+			$table.append($tr);
+		}
+	$div.append($table);
+}
+
+$(document).ready(function (){
+	var game = {
+		empty : "0",
+		start : [
+[5, 3, 0, 0, 7, 0, 0, 0, 0],
+[6, 0, 0, 1, 9, 5, 0, 0, 0],
+[0, 9, 8, 0, 0, 0, 0, 6, 0],
+[8, 0, 0, 0, 6, 0, 0, 0, 3],
+[4, 0, 0, 8, 0, 3, 0, 0, 1],
+[7, 0, 0, 0, 2, 0, 0, 0, 6],
+[0, 6, 0, 0, 0, 0, 2, 8, 0],
+[0, 0, 0, 4, 1, 9, 0, 0, 5],
+[0, 0, 0, 0, 8, 0, 0, 7, 9]
+],
+		id:'game'
+	};
+	redraw(game);
+	
+});
+</script>
+</body>
+</html>

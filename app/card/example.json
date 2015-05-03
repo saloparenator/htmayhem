@@ -1,0 +1,187 @@
+[
+    {
+        "type" : "field",
+        "name" : "arena",
+        "description" : "chunin exam"
+        "width" : 20,
+        "height" : 20,
+        "obstacle" : [
+            {
+                "x" : "10",
+                "y" : "10"
+            
+            }
+        ]
+    },
+    {
+        "name" : "naruto",
+        "type" : "character",
+        "health" : 200,
+        "chakras" : 1000
+    },
+    {
+        "name" : "kunai",
+        "type" : "attack",
+        "for" : "naruto",
+        "recharge" : 2,
+        "description" : "throw kunai",
+        "target" : [
+            {
+                "x" : -5,
+                "y" : 0,
+                "hp" : -5
+            },
+            {
+                "x" : 5,
+                "y" : 0,
+                "hp" : -5
+            },            {
+                "y" : -5,
+                "x" : 0,
+                "hp" : -5
+            },
+            {
+                "y" : 5,
+                "x" : 0,
+                "hp" : -5
+            }
+        ],
+        "destination" : [
+            {
+                "x" : -1,
+                "y" : 0
+            },
+            {
+                "x" : 1,
+                "y" : 0
+            },            {
+                "y" : -1,
+                "x" : 0
+            },
+            {
+                "y" : 1,
+                "x" : 0
+            }
+        ]
+    },
+    {
+        "name" : "kick",
+        "type" : "attack",
+        "for" : "naruto",
+        "recharge" : 2,
+        "description" : "kick adjacent",
+        "target" : [
+            {
+                "x" : -1,
+                "y" : 0,
+                "hp" : -5
+            },
+            {
+                "x" : 1,
+                "y" : 0,
+                "hp" : -5
+            },            {
+                "y" : -1,
+                "x" : 0,
+                "hp" : -5
+            },
+            {
+                "y" : 1,
+                "x" : 0,
+                "hp" : -5
+            }
+        ],
+        "destination" : [
+            {
+                "x" : -1,
+                "y" : 0
+            },
+            {
+                "x" : 1,
+                "y" : 0
+            },            {
+                "y" : -1,
+                "x" : 0
+            },
+            {
+                "y" : 1,
+                "x" : 0
+            }
+        ]
+    },
+    {
+        "name" : "run",
+        "type" : "attack",
+        "for" : "naruto",
+        "recharge" : 2,
+        "description" : "run somewhere",
+        "destination" : [
+            {
+                "x" : -5,
+                "y" : 0
+            },
+            {
+                "x" : 5,
+                "y" : 0
+            },            {
+                "y" : -5,
+                "x" : 0
+            },
+            {
+                "y" : 5,
+                "x" : 0
+            }
+        ]
+    },
+    {
+        "name" : "sasuke",
+        "type" : "character",
+        "health" : 100,
+        "chakras" : 200
+    },
+    {
+        "name" : "shuriken",
+        "type" : "attack",
+        "for" : "sasuke",
+        "recharge" : 2,
+        "description" : "throw shuriken",
+        "target" : [
+            {
+                "x" : -5,
+                "y" : 0,
+                "hp" : -10
+            },
+            {
+                "x" : 5,
+                "y" : 0,
+                "hp" : -10
+            },            {
+                "y" : -5,
+                "x" : 0,
+                "hp" : -10
+            },
+            {
+                "y" : 5,
+                "x" : 0,
+                "hp" : -10
+            }
+        ],
+        "destination" : [
+            {
+                "x" : -1,
+                "y" : 0
+            },
+            {
+                "x" : 1,
+                "y" : 0
+            },            {
+                "y" : -1,
+                "x" : 0
+            },
+            {
+                "y" : 1,
+                "x" : 0
+            }
+        ]
+    }
+]
