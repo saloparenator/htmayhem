@@ -6,19 +6,28 @@ define('test',
     /*module to test*/
     'app/lib/grid',
     'app/lib/bubble',
-    'app/kasbrik/ball'
+    'app/kasbrik/ball',
+    'app/kasbrik/mecanic/paddle',
+    'app/lib/pigCanvas',
+    'app/lib/liMonad'
     ],
 function (logger,
           qunit,
           grid,
           bubble,
-          ball) {
-    logger.setLevel('info');
+          ball,
+          kasbrik_paddle,
+          pig,
+          limonad) {
+    logger.setLevel('debug');
 /*code*/
     var suite = [
         grid,
         bubble,
-        ball
+        ball,
+        kasbrik_paddle,
+        pig,
+        limonad
     ];
     
     for (var index in suite){
