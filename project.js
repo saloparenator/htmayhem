@@ -49,6 +49,7 @@ requirejs.config({
         
         easeljs : ['https://cdnjs.cloudflare.com/ajax/libs/EaselJS/0.8.0/easeljs.min','lib/js/easeljs.min'],
         soundjs : ['https://cdnjs.cloudflare.com/ajax/libs/SoundJS/0.6.0/soundjs.min','lib/js/SoundJS.min'],
+        keypress : ['https://rawgit.com/dmauro/Keypress/master/keypress','https://cdn.rawgit.com/dmauro/Keypress/master/keypress'],
         
         lodash : ['https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.6.0/lodash.min','lib/js/lodash.min'],
         pouchdb : ['https://cdnjs.cloudflare.com/ajax/libs/pouchdb/3.3.1/pouchdb.min','lib/js/pouchdb.min'],

@@ -6,42 +6,17 @@ define('main',
         [
             /*amd compatible*/
             'loglevel',
-            'lodash',
-            'pouchdb',
-            'mustache',
-            /*non amd compatible lib*/
-            'bootstrap',
-            'easeljs',
-            /*other ressource*/
-            'text!app/tpl/canvas.tpl'
+            'app/kasbrik/kasbrik'
         ],
         function (
             logger,
-            lodash, 
-            pouchdb,
-            mustache,
-            bootstrap,
-            easeljs,
-            canvasTpl
+            kmain
                   ) {
-    logger.setLevel('trace');
+    logger.setLevel('debug');
 /*code*/
 
-    $(document).ready(function(){
-        logger.debug('biatche');
-        
-        var canvasHtml = mustache.to_html(canvasTpl, {id:'mainCanvas',width:640,height:360});
-        $('#main').append(canvasHtml);
-        var stage = new createjs.Stage("mainCanvas");
-        var circle = new createjs.Shape();
-        circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
-        circle.x = 100;
-        circle.y = 100;
-        stage.addChild(circle);
-        stage.update();
-
-    });
+    kmain.init();
     
-    
+    logger.debug('mother fucker !!!');
 /*end*/
 });

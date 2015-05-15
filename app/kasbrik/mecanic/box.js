@@ -1,4 +1,4 @@
-define('app/kasbrik/mecanic/paddle',
+define('app/kasbrik/mecanic/box',
 [
     'loglevel'
 ],
@@ -8,30 +8,32 @@ function (
 /*______________________________________________________________________________
                             code
 ______________________________________________________________________________*/
-    logger.debug('kasbrik paddle loaded');
+    logger.debug('kasbrik box loaded');
     
-    function make(x, y, w, minX, maxX, dispatcher){
+    function make(x,y,w,h,dispatcher){
 
-        logger.debug('kasbrik.paddle.make()');
+        logger.debug('kasbrik.box.make()');
 
-        var direction = undefined;
-
-        function setMovement(context,emit){
-            direction = context.direction;
+        function movingObject(context, emit){
+            logger.debug('movingObject');
+            if (context.x > x+w){
+                 emit('willCollide',{vx : -1, vy : context.vy});
+            }
+            
+            if (context.x < x){
+                 emit('willCollide',{vx : 1, vy : context.vy});
+            }
+            
+            if (context.y > y+h){
+                 emit('willCollide',{vx : context.vx, vy : -1});
+            }
+            
+            if (context.y < y){
+                 emit('willCollide',{vx : context.vx, vy : 1});
+            }
         }
 
-        function refresh(context,emit){
-            if (direction == 'left' && x > minX){
-                x -= 2;    
-            }
-            else if (direction == 'right' && x + w < maxX){
-                x += 2;
-            }
-            emit('paddleMove',{x : x, y : y, w : w})
-        }
-
-        dispatcher.bind('60hz',refresh);
-        dispatcher.bind('key',setMovement);
+        dispatcher.bind('ballAt',movingObject);
 
     }
 
@@ -40,7 +42,7 @@ ______________________________________________________________________________*/
      -------------------------------------------------------------------------*/
     function test(){
         
-        QUnit.test( "kasbrik.paddle", function( assert ) {
+        QUnit.test( "kasbrik.box", function( assert ) {
             assert.ok(false,'no test yet');
         });
         

@@ -1,4 +1,4 @@
-define('app/lib/liMonad',
+define('app/lib/dangerousDispatcher',
 [
     'loglevel',
     'lodash'
@@ -10,11 +10,11 @@ function (
 /*______________________________________________________________________________
                             code
 ______________________________________________________________________________*/
-    logger.debug('liMonad loaded');
+    logger.debug('dangerousDispatcher loaded');
 
     function make(new_binding){
 
-        logger.debug('liMonad.make()');
+        logger.debug('dangerousDispatcher.make()');
         
         /**
          * init
@@ -33,12 +33,12 @@ ______________________________________________________________________________*/
                         binding[action].push(monad);
                     }
                     else{
-                        logger.error('liMonad make error %o', new_binding[action]);
+                        logger.error('dangerousDispatcher make error %o', new_binding[action]);
                     }
                 }
             }
             else{
-                logger.error('liMonad make error %o', new_binding);
+                logger.error('dangerousDispatcher make error %o', new_binding);
             }
         }
         
@@ -90,7 +90,7 @@ ______________________________________________________________________________*/
          */
         function bind(action_name,monad){
             if (lodash.isFunction(monad) && lodash.isString(action_name)){
-                if (!lodash.contains(binding,action_name)){
+                if (binding[action_name] == undefined){
                     binding[action_name] = [];
                 }
                 binding[action_name].push(monad);
@@ -147,7 +147,7 @@ ______________________________________________________________________________*/
      *                Unit testing
      -------------------------------------------------------------------------*/
     function test(){
-        QUnit.test( "liMonad action(1) monad(1) no emit", function( assert ) {
+        QUnit.test( "dangerousDispatcher action(1) monad(1) no emit", function( assert ) {
             var success = false;
             var context = {
                 msg : "hello"
@@ -162,7 +162,7 @@ ______________________________________________________________________________*/
             assert.ok(success,'monad executed');
         });
         
-        QUnit.test( "liMonad action(1) monad(2) emit(1)", function( assert ) {
+        QUnit.test( "dangerousDispatcher action(1) monad(2) emit(1)", function( assert ) {
             var success = false;
             var success2 = false;
             var context = {
@@ -189,7 +189,7 @@ ______________________________________________________________________________*/
             assert.ok(success2,'monad2 executed');
         });
         
-        QUnit.test( "liMonad action(1) monad(3) chained emit(2)", function( assert ) {
+        QUnit.test( "dangerousDispatcher action(1) monad(3) chained emit(2)", function( assert ) {
             var success = false;
             var success2 = false;
             var success3 = false;
@@ -228,7 +228,7 @@ ______________________________________________________________________________*/
             assert.ok(success3,'monad3 executed');
         });
         
-        QUnit.test( "liMonad action(1) monad(3) forked emit(2)", function( assert ) {
+        QUnit.test( "dangerousDispatcher action(1) monad(3) forked emit(2)", function( assert ) {
             var success = false;
             var success2 = false;
             var success3 = false;
@@ -259,6 +259,38 @@ ______________________________________________________________________________*/
             limonad.bind('test',monad);
             limonad.bind('test2',monad2);
             limonad.bind('test3',monad3);
+            limonad.emit('test',context);
+            assert.ok(success,'monad executed');
+            assert.ok(success2,'monad2 executed');
+            assert.ok(success3,'monad3 executed');
+        });
+        
+        QUnit.test( "dangerousDispatcher action(1) monad(3) forked emit(0)", function( assert ) {
+            var success = false;
+            var success2 = false;
+            var success3 = false;
+            var context = {
+                msg : "hello"
+            };
+            function monad(ctx,emit){
+                assert.ok(lodash.isEqual(context,ctx),'monad context');
+                success = true;
+                ctx.msg += ' ';
+            }
+            function monad2(ctx,emit){
+                assert.ok(lodash.isEqual(context,ctx),'monad2 context');
+                ctx.msg += 'world';
+                success2 = true;
+            }
+            function monad3(ctx){
+                assert.ok(lodash.isEqual(context,ctx),'monad3 context');
+                ctx.msg += 'you';
+                success3 = true;
+            }
+            var limonad = make();
+            limonad.bind('test',monad);
+            limonad.bind('test',monad2);
+            limonad.bind('test',monad3);
             limonad.emit('test',context);
             assert.ok(success,'monad executed');
             assert.ok(success2,'monad2 executed');

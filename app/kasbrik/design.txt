@@ -1,0 +1,7 @@
+
+
+
+
+{key_left} => "action_paddle_left" => [paddle_left] => [ball_paddle_bounce] => [paddle_redraw]
+{key_right} => "action_paddle_left" => [paddle_right] => [ball_paddle_bounce]
+{every_sixthies} => "action_ball_move" => [ball_move]

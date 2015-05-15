@@ -9,7 +9,7 @@ define('test',
     'app/kasbrik/ball',
     'app/kasbrik/mecanic/paddle',
     'app/lib/pigCanvas',
-    'app/lib/liMonad'
+    'app/lib/dangerousDispatcher'
     ],
 function (logger,
           qunit,
@@ -18,16 +18,16 @@ function (logger,
           ball,
           kasbrik_paddle,
           pig,
-          limonad) {
+          dangerousDispather) {
     logger.setLevel('debug');
 /*code*/
     var suite = [
-        grid,
-        bubble,
-        ball,
-        kasbrik_paddle,
-        pig,
-        limonad
+        //grid,
+        //bubble,
+        //ball,
+        //kasbrik_paddle,
+        //pig,
+        dangerousDispather
     ];
     
     for (var index in suite){
