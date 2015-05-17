@@ -5,6 +5,8 @@ define('app/kasbrik/mecanic/ball',
 function (
     logger
           ) {
+    
+    logger.setLevel('debug');
 /*______________________________________________________________________________
                             code
 ______________________________________________________________________________*/
@@ -12,7 +14,7 @@ ______________________________________________________________________________*/
     
     function make(x,y,limonad){
 
-        logger.debug('kasbrik.ball.make()');
+        logger.debug('kasbrik ball : hello');
         
         var ball = {
             x : x,
@@ -28,17 +30,18 @@ ______________________________________________________________________________*/
                 vy : deltaY / dist
             };
         }
-        
-        function move(context, emit){
+
+        limonad.bind('60hz',function (context, emit){
             var vector = normalise(ball.vx, ball.vy);
             ball.vx = vector.vx;
             ball.vy = vector.vy;
             ball.x = ball.x + ball.vx;
             ball.y = ball.y + ball.vy;
             emit('ballAt',ball);
-        }
-
-        function collide(context, emit){
+            logger.debug('kasbrik ball: im moving biatch ! look yo %o', ball);
+        });
+        
+        limonad.bind('willCollide', function (context, emit){
             //cancel last move
             ball.x = ball.x - ball.vx;
             ball.y = ball.y - ball.vy;
@@ -47,30 +50,16 @@ ______________________________________________________________________________*/
             ball.vy = context.vy;
             logger.info(ball);
             emit('ballImpact',ball);
-        }
-
-        limonad.bind('60hz',move);
-        limonad.bind('willCollide',collide);
+            logger.debug('kasbrik ball: no problem yo look im going away %o', ball);
+        });
 
     }
-
-    /**-------------------------------------------------------------------------
-     *                Unit testing
-     -------------------------------------------------------------------------*/
-    function test(){
-        
-        QUnit.test( "kasbrik.ball", function( assert ) {
-            assert.ok(false,'no test yet');
-        });
-        
-    };
 
     /**-------------------------------------------------------------------------
      *                      public
      -------------------------------------------------------------------------*/
     return {
-        make : make,
-        test : test
+        make : make
     };
 /*______________________________________________________________________________
                             end

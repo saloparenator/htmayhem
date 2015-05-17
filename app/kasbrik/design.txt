@@ -1,7 +1,9 @@
 
-
-
-
-{key_left} => "action_paddle_left" => [paddle_left] => [ball_paddle_bounce] => [paddle_redraw]
-{key_right} => "action_paddle_left" => [paddle_right] => [ball_paddle_bounce]
-{every_sixthies} => "action_ball_move" => [ball_move]
+60hz          --> [ball] --im moving---> [draw]
+                                     \-> [briks]  --collide--> [ball]..
+                                     \-> [box]    --collide--> [ball]..
+                                     \-> [paddle] --collide--> [ball]..
+player_action --> [paddle]--im moving-->[draw]
+60hz          --> [draw]
+60hz          --> [briks]
+          

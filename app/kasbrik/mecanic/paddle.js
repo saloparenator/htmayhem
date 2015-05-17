@@ -12,46 +12,45 @@ ______________________________________________________________________________*/
     
     function make(x, y, w, minX, maxX, dispatcher){
 
-        logger.debug('kasbrik.paddle.make()');
+        logger.debug('kasbrik paddle: heeeelllo!!');
 
         var direction = undefined;
+        var h = 10;
 
-        function setMovement(context,emit){
-            direction = context.direction;
-        }
-
-        function refresh(context,emit){
+        dispatcher.bind('60hz', function (context,emit){
             if (direction == 'left' && x > minX){
-                x -= 2;    
+                x -= 5;    
+                emit('paddleMove',{x : x, y : y, w : w})
             }
             else if (direction == 'right' && x + w < maxX){
-                x += 2;
+                x += 5;
+                emit('paddleMove',{x : x, y : y, w : w})
             }
-            emit('paddleMove',{x : x, y : y, w : w})
-        }
-
-        dispatcher.bind('60hz',refresh);
-        dispatcher.bind('key',setMovement);
-
-    }
-
-    /**-------------------------------------------------------------------------
-     *                Unit testing
-     -------------------------------------------------------------------------*/
-    function test(){
-        
-        QUnit.test( "kasbrik.paddle", function( assert ) {
-            assert.ok(false,'no test yet');
+            logger.debug('kasbrik paddle: YAAAAWWWNNN');
         });
         
-    };
+        dispatcher.bind('key',function (context,emit){
+            logger.debug('kasbrik paddle: I am not confortable %o',context);
+            direction = context.direction;
+        });
+        
+        dispatcher.bind('ballAt',function (context,emit){
+            if (context.x < x+w+10 && 
+                context.y < y+h+10 &&
+                context.x > x-10 && 
+                context.y > y-10){
+                emit('willCollide',{vx : context.vx, vy : -1});
+                logger.debug('kasbrik paddle: GET AWAY FROM ME YOU SCUM!!!!! %o',context);
+            }
+        });
 
+        dispatcher.emit('paddleMove',{x : x, y : y, w : w})
+    }
     /**-------------------------------------------------------------------------
      *                      public
      -------------------------------------------------------------------------*/
     return {
-        make : make,
-        test : test
+        make : make
     };
 /*______________________________________________________________________________
                             end

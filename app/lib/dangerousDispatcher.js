@@ -7,6 +7,7 @@ function (
     logger,
     lodash
           ) {
+    var debug = false;
 /*______________________________________________________________________________
                             code
 ______________________________________________________________________________*/
@@ -14,12 +15,12 @@ ______________________________________________________________________________*/
 
     function make(new_binding){
 
-        logger.debug('dangerousDispatcher.make()');
+        logger.debug('DD: dangerousDispatcher.make()');
         
         /**
-         * init
+         * init, perform a deep copy of new_binding and perform structural precondition
          */
-        var binding = {};
+        var binding = {}; //todo use immutable
         for (var action in new_binding){
             if (lodash.isString(action) &&
                 lodash.isArray(new_binding[action])){
@@ -33,17 +34,17 @@ ______________________________________________________________________________*/
                         binding[action].push(monad);
                     }
                     else{
-                        logger.error('dangerousDispatcher make error %o', new_binding[action]);
+                        logger.error('DD: dangerousDispatcher make error %o', new_binding[action]);
                     }
                 }
             }
             else{
-                logger.error('dangerousDispatcher make error %o', new_binding);
+                logger.error('DD: dangerousDispatcher make error %o', new_binding);
             }
         }
         
         /**
-         * 
+         * tell if given object is a dispatch
          */
         function isDispatch(dispatch){
             return lodash.isObject(dispatch.context) && 
@@ -51,11 +52,14 @@ ______________________________________________________________________________*/
         }
 
         /**
-         * 
+         * execute a list of dispatch and return union of all returned dispatchLst
          */
         function exec(dispatchLst){
             var new_dispatch = [];
+            
+            //emitter is bundled permit many return per mecanic action
             function emitter (new_action,new_context){
+                logger.info('info : %s(%o)',new_action,new_context);
                 if (lodash.isObject(new_context) && 
                     lodash.isString(new_action)){
                     new_dispatch.push({
@@ -65,11 +69,13 @@ ______________________________________________________________________________*/
                 }
             }
             
+            //for all dispatch in dispatchLst if dispatch in binding
             for (var i in dispatchLst){
                 var dispatch = dispatchLst[i];
                 if (isDispatch(dispatch) &&
                     dispatch.action in binding){
-                    logger.debug('monad execution %o',dispatch);
+                    if(debug) logger.debug('DD: mecanic execution %o',dispatch);
+                    //try to execute all action
                     for (var j in binding[dispatch.action]){
                         var monad = binding[dispatch.action][j];
                         try{
@@ -86,7 +92,7 @@ ______________________________________________________________________________*/
         }
         
         /**
-         * add monad to action listener
+         * add mecanic to action listener
          */
         function bind(action_name,monad){
             if (lodash.isFunction(monad) && lodash.isString(action_name)){
@@ -94,11 +100,14 @@ ______________________________________________________________________________*/
                     binding[action_name] = [];
                 }
                 binding[action_name].push(monad);
+                if(debug) logger.debug('DD: $s bound to %o',action_name,monad);
+                return true;
             }
+            return false;
         }
         
         /**
-         * remove monad to action listener
+         * remove mecanic to action listener
          */
         function unbind(action_name,monad){
             if (lodash.isFunction(monad) && lodash.isString(action_name)){
@@ -106,28 +115,28 @@ ______________________________________________________________________________*/
                     binding[action_name] = [];
                 }
                 binding[action_name].remove(monad);
+                if(debug) logger.debug('DD: $s unbound from %o',action_name,monad);
+                return true;
             }
+            return false;
         }
 
         /**
          * trigger one action
          */
         function emit(action,ctx){
-            if (!ctx){
-                ctx = {};
-            }
-            var dispatchLst = [
-                {
-                    action : action,
-                    context : ctx
-                }
-            ];
+            logger.info('info : %s(%o)',action,ctx);
+            if (!ctx){ctx = {};}
+            var dispatchLst = [{action : action,context : ctx}];
             var cnt = 0;
             var actionSet = [];     //todo warn if one action is called two time by the same emit
+            //execute mecanic and tail-call all mecanic that is bound to returned dispatch list
+            //this make all mecanic in a continuation
             while(dispatchLst.length){
                 cnt += 1;
-                logger.debug('emit level %i dispatch %o',cnt,dispatchLst);
+                if(debug) logger.debug('DD: emit level %i dispatch %o',cnt,dispatchLst);
                 actionSet = lodash.union(lodash.keys(dispatchLst), actionSet);
+                //todo use worker if available
                 dispatchLst = exec(dispatchLst);
             }
         }
